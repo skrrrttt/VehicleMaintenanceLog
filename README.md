@@ -16,7 +16,7 @@ Click **"Edit configuration"** and set:
 |-------|-------|-------|
 | **Framework preset** | Next.js (Static HTML Export) | Select from dropdown |
 | **Build command** | `npm run build` | ✅ Required |
-| **Build output directory** | `out` | ✅ Required |
+| **Build output directory** | `out` | ✅ MUST be exactly `out` (not `./out` or `/out`) |
 | **Root directory** | `/` | Default (leave as-is) |
 | **Deploy command** | `echo "Deployment handled by Cloudflare Pages"` | ✅ No-op command |
 
@@ -40,11 +40,13 @@ If you connected your GitHub repository to Cloudflare Pages, configure it as fol
 **Cloudflare Pages Settings:**
 - **Framework preset**: Next.js (Static HTML Export)
 - **Build command**: `npm run build`
-- **Build output directory**: `out`
+- **Build output directory**: `out` (exactly `out` - not `./out` or `/out`)
 - **Root directory**: `/` (default)
 - **Deploy command**: `echo "Deployment handled by Cloudflare Pages"`
 
 **Why?** Cloudflare Pages automatically deploys the `out/` directory after the build completes. If the deploy command field is required, use a simple `echo` command instead of `npm run deploy` to avoid authentication errors.
+
+**IMPORTANT**: The `wrangler.toml` file is NOT used for Git-based deployments. All configuration must be set in the Cloudflare Pages dashboard.
 
 ### For Manual Wrangler CLI Deployments
 
@@ -328,6 +330,29 @@ Authentication error [code: 10000]
 **Expected Result**: Build succeeds and Cloudflare automatically deploys the `out/` directory without any authentication errors.
 
 **Note**: The `npm run deploy` script in `package.json` is ONLY for manual local deployments using Wrangler CLI. It should NEVER be used in Cloudflare Pages Git-based CI/CD.
+
+### ❌ "No server found" or site not loading
+
+**Symptom**: Build succeeds but visiting the Cloudflare Pages URL shows "No server found" or blank page.
+
+**Root Cause**: The **Build output directory** in Cloudflare Pages settings is incorrect.
+
+**Solution:**
+
+1. Go to **Cloudflare Dashboard** → **Workers & Pages** → **vehicle-maintenance-tracker**
+2. Click **Settings** → **Builds & deployments** → **Edit configuration**
+3. Verify **Build output directory** is set to exactly: `out`
+
+**Common mistakes:**
+- ❌ `./out` (has dot-slash prefix)
+- ❌ `/out` (has leading slash)
+- ❌ `out/` (has trailing slash)
+- ✅ `out` (correct - no slashes or dots)
+
+4. Click **Save**
+5. Go to **Deployments** tab → **Retry deployment**
+
+**Note**: The `wrangler.toml` file is NOT used for Git-based Cloudflare Pages deployments. The build output directory must be configured in the Cloudflare Pages dashboard.
 
 ### Data not persisting
 
