@@ -18,16 +18,16 @@ Click **"Edit configuration"** and set:
 | **Build command** | `npm run build` | ✅ Required |
 | **Build output directory** | `out` | ✅ Required |
 | **Root directory** | `/` | Default (leave as-is) |
-| **Deploy command** | **(EMPTY - DELETE THIS)** | ❌ Must be empty! |
+| **Deploy command** | `echo "Deployment handled by Cloudflare Pages"` | ✅ No-op command |
 
 ### ⚠️ Common Mistake:
 
-The "Deploy command" field exists in the UI, but for Git-based deployments it **MUST BE EMPTY**.
+If the deploy command field is required by Cloudflare, use a **no-op command** that doesn't require authentication:
 
-- ❌ **WRONG**: `npm run deploy` or `wrangler pages deploy out`
-- ✅ **CORRECT**: (empty field - no value)
+- ❌ **WRONG**: `npm run deploy` or `wrangler pages deploy out` (causes auth errors)
+- ✅ **CORRECT**: `echo "Deployment handled by Cloudflare Pages"` (no-op command)
 
-**Why?** Cloudflare Pages automatically deploys your `out/` directory after building. The `npm run deploy` script is ONLY for manual local deployments using Wrangler CLI, NOT for Git-based CI/CD deployments.
+**Why?** Cloudflare Pages automatically deploys your `out/` directory after building. Using `wrangler pages deploy` in the deploy command requires authentication that the CI/CD environment doesn't have. A simple `echo` command satisfies the required field without triggering authentication errors.
 
 ---
 
@@ -42,9 +42,9 @@ If you connected your GitHub repository to Cloudflare Pages, configure it as fol
 - **Build command**: `npm run build`
 - **Build output directory**: `out`
 - **Root directory**: `/` (default)
-- **Deploy command**: **(LEAVE EMPTY - delete this field)**
+- **Deploy command**: `echo "Deployment handled by Cloudflare Pages"`
 
-**Why?** Cloudflare Pages automatically deploys the `out/` directory after the build completes. A deploy command is only needed for manual Wrangler CLI deployments, not for Git integrations.
+**Why?** Cloudflare Pages automatically deploys the `out/` directory after the build completes. If the deploy command field is required, use a simple `echo` command instead of `npm run deploy` to avoid authentication errors.
 
 ### For Manual Wrangler CLI Deployments
 
@@ -308,16 +308,16 @@ Authentication error [code: 10000]
      - Root directory (optional)
      - Deploy command ← **THIS IS THE PROBLEM**
 
-4. **Remove the Deploy Command**
+4. **Change the Deploy Command**
    - Find the **"Deploy command"** field
-   - **DELETE** any value in this field (should say `npm run deploy` or similar)
-   - Leave it **completely empty**
-   - DO NOT put any value here
+   - **REPLACE** the current value (probably `npm run deploy`)
+   - **SET TO**: `echo "Deployment handled by Cloudflare Pages"`
+   - This is a no-op command that won't trigger authentication
 
 5. **Verify These Settings**
    - ✅ Build command: `npm run build`
    - ✅ Build output directory: `out`
-   - ❌ Deploy command: (empty)
+   - ✅ Deploy command: `echo "Deployment handled by Cloudflare Pages"`
 
 6. **Save and Retry**
    - Click **"Save"**
