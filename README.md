@@ -131,25 +131,15 @@ npm start
 
 This app is configured for easy deployment to Cloudflare Pages using static export:
 
-**Option 1: Automatic Deployment via Git**
 1. Connect your repository to Cloudflare Pages
-2. Set build command: `npm run build`
-3. Set output directory: `out`
-4. Deploy!
+2. Configure the build settings:
+   - **Build command:** `npm run build`
+   - **Build output directory:** `out`
+3. Deploy!
 
-**Option 2: Manual Deployment with Wrangler**
-```bash
-# Install Wrangler globally (if not already installed)
-npm install -g wrangler
+Cloudflare Pages will automatically build and deploy your app. No additional configuration needed!
 
-# Login to Cloudflare
-wrangler login
-
-# Deploy
-npm run deploy
-```
-
-The app exports as a static site, making it perfect for Cloudflare Pages, Vercel, Netlify, or any static hosting provider.
+The app exports as a static site, making it perfect for Cloudflare Pages, Vercel, Netlify, GitHub Pages, or any static hosting provider.
 
 ## Data Persistence
 
