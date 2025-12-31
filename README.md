@@ -366,6 +366,48 @@ Authentication error [code: 10000]
 - Use standard `<img>` tags only
 - Verify `images.unoptimized: true` in `next.config.mjs`
 
+## Mobile App (PWA)
+
+### Installing on iPhone/iPad:
+
+1. Open the site in **Safari** (not Chrome)
+2. Tap the **Share** button (square with arrow up)
+3. Scroll down and tap **"Add to Home Screen"**
+4. Tap **"Add"**
+5. The app icon will appear on your home screen
+
+### How App Updates Work:
+
+When we deploy a new version to Cloudflare Pages:
+
+**Automatic updates:**
+- The browser will check for updates when you open the app
+- New versions are downloaded automatically in the background
+- **To force an update immediately:**
+  1. Open the app
+  2. Pull down to refresh (or close and reopen)
+  3. The new version will load
+
+**If you're not seeing updates:**
+1. Close the app completely (swipe up from bottom, swipe app away)
+2. Reopen the app
+3. If still not updated, delete the app from home screen and re-add it
+
+**Your data is safe:**
+- Updates won't delete your vehicles or service records
+- All data is stored in your browser's localStorage
+- Data persists across updates
+
+### Data Backup (Manual):
+
+Since data is device-only, to backup or transfer:
+1. Open browser console (desktop Safari/Chrome)
+2. Run: `JSON.stringify(localStorage.getItem('vehicle-maintenance-tracker'))`
+3. Copy the output and save it
+4. To restore: `localStorage.setItem('vehicle-maintenance-tracker', 'YOUR_COPIED_DATA')`
+
+**Note**: There's currently no built-in export/import feature, but this is on the roadmap.
+
 ## Scripts
 
 ```bash
