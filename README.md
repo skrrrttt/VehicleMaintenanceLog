@@ -2,6 +2,25 @@
 
 A modern, mobile-first web application for tracking vehicle maintenance across multiple vehicles. Built with Next.js, TypeScript, and Tailwind CSS, optimized for Cloudflare Pages deployment with LocalStorage persistence.
 
+## 🚨 IMPORTANT: Cloudflare Pages Configuration
+
+**Current Issue**: Your Cloudflare Pages project has a deploy command configured (`wrangler pages deploy out`). For static sites, this should be **EMPTY**.
+
+### How to Fix in Cloudflare Pages Dashboard:
+
+1. Go to your Cloudflare Pages project settings
+2. Navigate to **Settings** → **Builds & deployments**
+3. Under **Build configurations**, click **Edit configuration**
+4. Find the **Deploy command** field
+5. **DELETE the deploy command** (leave it empty)
+6. Keep these settings:
+   - **Build command**: `npm run build`
+   - **Build output directory**: `out`
+   - **Deploy command**: **(LEAVE EMPTY)**
+7. Save and redeploy
+
+Cloudflare Pages will automatically deploy the contents of the `out/` directory without needing a deploy command.
+
 ## Features
 
 - **Multi-Vehicle Management**: Add, edit, and switch between multiple vehicles
@@ -73,37 +92,34 @@ This generates a static site in the `out/` directory.
 
 ## Cloudflare Pages Deployment
 
-### Method 1: Automatic Git Deployment (Recommended)
+### ✅ Recommended: Automatic Git Deployment
 
-1. Push your code to GitHub
+1. Push your code to GitHub ✓ (already done)
 2. Go to [Cloudflare Pages](https://pages.cloudflare.com/)
 3. Connect your repository
 4. Configure build settings:
+   - **Framework preset**: Next.js (Static HTML Export)
    - **Build command**: `npm run build`
    - **Build output directory**: `out`
-   - **Framework preset**: Next.js (Static HTML Export)
+   - **Root directory**: `/` (or leave default)
+   - **Deploy command**: **(LEAVE EMPTY)** ⚠️ Important!
 
-Cloudflare Pages will automatically build and deploy on every push.
-
-### Method 2: Manual Deployment with Wrangler
+### Alternative: Manual Deployment with Wrangler CLI
 
 ```bash
-# Install Wrangler CLI globally
+# Install Wrangler globally
 npm install -g wrangler
 
-# Login to Cloudflare
-wrangler login
+# Or use npx (no installation needed)
+npx wrangler login
 
-# Deploy to Cloudflare Pages
-wrangler pages deploy out --project-name=vehicle-maintenance-tracker
-
-# Or use the build script and deploy in one step
-npm run build && wrangler pages deploy out
+# Deploy the 'out' directory
+npx wrangler pages deploy out --project-name=vehicle-maintenance-tracker
 ```
 
 ### Wrangler Configuration
 
-The `wrangler.toml` file configures Cloudflare Pages deployment:
+The `wrangler.toml` file is included for manual deployments:
 
 ```toml
 name = "vehicle-maintenance-tracker"
@@ -112,6 +128,8 @@ compatibility_date = "2025-12-31"
 [assets]
 directory = "./out"
 ```
+
+**Note**: This file is NOT needed for automatic Cloudflare Pages deployment via Git.
 
 ## Critical Configuration Details
 
@@ -127,10 +145,11 @@ const nextConfig = {
 };
 ```
 
-**Important**:
-- DO NOT use Next.js `<Image>` component (requires server)
-- Use standard HTML `<img>` tags instead
-- All logic runs client-side (no server actions)
+**Important Constraints**:
+- ❌ NO Next.js `<Image>` component (requires server)
+- ✅ Use standard HTML `<img>` tags
+- ✅ All logic runs client-side
+- ✅ No server actions or API routes
 
 ### TypeScript Types
 
@@ -193,6 +212,7 @@ All data automatically persists to `localStorage` with key: `vehicle-maintenance
 - ✅ All data stored in browser's LocalStorage
 - ✅ Persists between sessions
 - ✅ No backend required
+- ✅ Complete privacy - data never leaves your browser
 - ⚠️ Data is device-specific (not synced across devices)
 - ⚠️ Clearing browser data will delete records
 
@@ -201,7 +221,8 @@ All data automatically persists to `localStorage` with key: `vehicle-maintenance
 - **First Load JS**: ~109 KB (optimized)
 - **Total Routes**: 2 (index + 404)
 - **Build Output**: Static HTML/CSS/JS
-- **Caching**: Aggressive CDN caching on Cloudflare
+- **Build Time**: ~5 seconds
+- **Zero Vulnerabilities**
 
 ## Browser Compatibility
 
@@ -209,6 +230,30 @@ Works in all modern browsers supporting:
 - ES2017+
 - LocalStorage API
 - CSS Grid & Flexbox
+- crypto.randomUUID()
+
+## Troubleshooting
+
+### Build succeeds but deployment fails with "wrangler: not found"
+
+**Solution**: Remove the deploy command from your Cloudflare Pages settings.
+
+1. Go to Cloudflare Pages → Your Project → Settings
+2. Build & deployments → Edit configuration
+3. Delete the "Deploy command" field (leave it empty)
+4. Save and redeploy
+
+### Data not persisting
+
+- Check browser's LocalStorage settings
+- Ensure LocalStorage is not disabled
+- Check if in private/incognito mode (may not persist)
+
+### Build fails with Image optimization error
+
+- Ensure you're not using Next.js `<Image>` component
+- Use standard `<img>` tags only
+- Verify `images.unoptimized: true` in `next.config.mjs`
 
 ## License
 
