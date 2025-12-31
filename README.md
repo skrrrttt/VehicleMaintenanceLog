@@ -2,24 +2,29 @@
 
 A modern, mobile-first web application for tracking vehicle maintenance across multiple vehicles. Built with Next.js, TypeScript, and Tailwind CSS, optimized for Cloudflare Pages deployment with LocalStorage persistence.
 
-## 🚨 IMPORTANT: Cloudflare Pages Configuration
+## 🚨 Cloudflare Pages Deploy Command Configuration
 
-**Current Issue**: Your Cloudflare Pages project has a deploy command configured (`wrangler pages deploy out`). For static sites, this should be **EMPTY**.
+**If your Cloudflare Pages project requires a deploy command**, use:
 
-### How to Fix in Cloudflare Pages Dashboard:
+```
+npm run deploy
+```
 
-1. Go to your Cloudflare Pages project settings
-2. Navigate to **Settings** → **Builds & deployments**
-3. Under **Build configurations**, click **Edit configuration**
-4. Find the **Deploy command** field
-5. **DELETE the deploy command** (leave it empty)
-6. Keep these settings:
-   - **Build command**: `npm run build`
-   - **Build output directory**: `out`
-   - **Deploy command**: **(LEAVE EMPTY)**
-7. Save and redeploy
+This will execute the `wrangler pages deploy out` command using the locally installed wrangler.
 
-Cloudflare Pages will automatically deploy the contents of the `out/` directory without needing a deploy command.
+**Alternative**: Change the deploy command in Cloudflare Pages to:
+
+```
+npx wrangler pages deploy out
+```
+
+This uses npx to run wrangler from node_modules without needing a global installation.
+
+### Recommended Cloudflare Pages Settings:
+
+- **Build command**: `npm run build`
+- **Build output directory**: `out`
+- **Deploy command**: `npm run deploy` OR `npx wrangler pages deploy out`
 
 ## Features
 
@@ -38,7 +43,7 @@ Cloudflare Pages will automatically deploy the contents of the `out/` directory 
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide-React
 - **State Management**: React Hooks with LocalStorage
-- **Deployment**: Cloudflare Pages
+- **Deployment**: Cloudflare Pages with Wrangler
 
 ## Project Structure
 
@@ -92,7 +97,7 @@ This generates a static site in the `out/` directory.
 
 ## Cloudflare Pages Deployment
 
-### ✅ Recommended: Automatic Git Deployment
+### ✅ Automatic Git Deployment (Recommended)
 
 1. Push your code to GitHub ✓ (already done)
 2. Go to [Cloudflare Pages](https://pages.cloudflare.com/)
@@ -101,25 +106,41 @@ This generates a static site in the `out/` directory.
    - **Framework preset**: Next.js (Static HTML Export)
    - **Build command**: `npm run build`
    - **Build output directory**: `out`
-   - **Root directory**: `/` (or leave default)
-   - **Deploy command**: **(LEAVE EMPTY)** ⚠️ Important!
+   - **Deploy command**: `npm run deploy` (uses local wrangler)
 
-### Alternative: Manual Deployment with Wrangler CLI
+### Alternative Deploy Commands
+
+If `npm run deploy` doesn't work, try:
 
 ```bash
-# Install Wrangler globally
-npm install -g wrangler
+npx wrangler pages deploy out
+```
 
-# Or use npx (no installation needed)
-npx wrangler login
+Or if you prefer the wrangler.toml configuration:
 
-# Deploy the 'out' directory
+```bash
+npx wrangler pages deploy
+```
+
+### Manual Deployment with Wrangler CLI
+
+```bash
+# Install dependencies first
+npm install
+
+# Build the project
+npm run build
+
+# Deploy using npm script
+npm run deploy
+
+# Or deploy directly with npx
 npx wrangler pages deploy out --project-name=vehicle-maintenance-tracker
 ```
 
 ### Wrangler Configuration
 
-The `wrangler.toml` file is included for manual deployments:
+The `wrangler.toml` file configures Cloudflare Pages deployment:
 
 ```toml
 name = "vehicle-maintenance-tracker"
@@ -129,7 +150,7 @@ compatibility_date = "2025-12-31"
 directory = "./out"
 ```
 
-**Note**: This file is NOT needed for automatic Cloudflare Pages deployment via Git.
+This tells Wrangler where to find the static files to deploy.
 
 ## Critical Configuration Details
 
@@ -234,14 +255,21 @@ Works in all modern browsers supporting:
 
 ## Troubleshooting
 
-### Build succeeds but deployment fails with "wrangler: not found"
+### Deployment fails with "wrangler: not found"
 
-**Solution**: Remove the deploy command from your Cloudflare Pages settings.
+**Solution**: Update your Cloudflare Pages deploy command to:
 
-1. Go to Cloudflare Pages → Your Project → Settings
-2. Build & deployments → Edit configuration
-3. Delete the "Deploy command" field (leave it empty)
-4. Save and redeploy
+```
+npm run deploy
+```
+
+Or:
+
+```
+npx wrangler pages deploy out
+```
+
+This ensures wrangler is executed from the local node_modules installation.
 
 ### Data not persisting
 
@@ -254,6 +282,16 @@ Works in all modern browsers supporting:
 - Ensure you're not using Next.js `<Image>` component
 - Use standard `<img>` tags only
 - Verify `images.unoptimized: true` in `next.config.mjs`
+
+## Scripts
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build static export to out/
+npm run start    # Start production server (not for static export)
+npm run lint     # Run ESLint
+npm run deploy   # Deploy to Cloudflare Pages with Wrangler
+```
 
 ## License
 
