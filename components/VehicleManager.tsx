@@ -145,11 +145,12 @@ function VehicleModal({
             </label>
             <input
               type="number"
-              value={formData.currentMileage}
+              value={formData.currentMileage || ''}
               onChange={(e) =>
-                onFormDataChange({ ...formData, currentMileage: Number(e.target.value) })
+                onFormDataChange({ ...formData, currentMileage: Number(e.target.value) || 0 })
               }
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="0"
               required
               min="0"
             />
