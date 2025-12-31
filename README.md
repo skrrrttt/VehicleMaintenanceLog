@@ -140,7 +140,10 @@ This app is **fully optimized** for Cloudflare Pages deployment with static expo
    - **Build command:** `npm run build`
    - **Build output directory:** `out`
    - **Node.js version:** 18 or higher
+   - **Deploy command:** Leave EMPTY or remove it (auto-deploys from `out/`)
 5. Deploy!
+
+**Important:** If you have a custom deploy command configured (like `npx wrangler deploy`), the included `wrangler.toml` will handle it. However, for best results, remove any custom deploy command and let Cloudflare Pages automatically deploy the `out/` directory.
 
 **What's Included:**
 - ✅ Static HTML export configuration

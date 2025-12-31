@@ -1,0 +1,7 @@
+name = "vehicle-maintenance-tracker"
+compatibility_date = "2025-12-31"
+
+# Static assets configuration for Cloudflare Pages
+[assets]
+directory = "./out"
+binding = "ASSETS"
