@@ -20,6 +20,162 @@ interface VehicleManagerProps {
   onSetActiveVehicle: (id: string) => void;
 }
 
+interface VehicleModalProps {
+  isEditMode: boolean;
+  formData: {
+    name: string;
+    year: number;
+    make: string;
+    model: string;
+    vin: string;
+    currentMileage: number;
+  };
+  onFormDataChange: (data: {
+    name: string;
+    year: number;
+    make: string;
+    model: string;
+    vin: string;
+    currentMileage: number;
+  }) => void;
+  onSubmit: (e: FormEvent) => void;
+  onClose: () => void;
+}
+
+function VehicleModal({
+  isEditMode,
+  formData,
+  onFormDataChange,
+  onSubmit,
+  onClose,
+}: VehicleModalProps) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-900 rounded-lg shadow-xl max-w-md w-full border border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
+          <h2 className="text-xl font-bold text-gray-100">
+            {isEditMode ? 'Edit Vehicle' : 'Add Vehicle'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-800 rounded-lg transition-colors text-gray-400 hover:text-gray-200"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={onSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Vehicle Name
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => onFormDataChange({ ...formData, name: e.target.value })}
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="My Car"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Year
+              </label>
+              <input
+                type="number"
+                value={formData.year}
+                onChange={(e) =>
+                  onFormDataChange({ ...formData, year: Number(e.target.value) })
+                }
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+                min="1900"
+                max={new Date().getFullYear() + 1}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Make
+              </label>
+              <input
+                type="text"
+                value={formData.make}
+                onChange={(e) => onFormDataChange({ ...formData, make: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Toyota"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Model
+            </label>
+            <input
+              type="text"
+              value={formData.model}
+              onChange={(e) => onFormDataChange({ ...formData, model: e.target.value })}
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Camry"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              VIN
+            </label>
+            <input
+              type="text"
+              value={formData.vin}
+              onChange={(e) => onFormDataChange({ ...formData, vin: e.target.value })}
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              placeholder="1HGBH41JXMN109186"
+              maxLength={17}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Current Mileage
+            </label>
+            <input
+              type="number"
+              value={formData.currentMileage}
+              onChange={(e) =>
+                onFormDataChange({ ...formData, currentMileage: Number(e.target.value) })
+              }
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              min="0"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              {isEditMode ? 'Save Changes' : 'Add Vehicle'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function VehicleManager({
   vehicles,
   activeVehicleId,
@@ -88,132 +244,6 @@ export default function VehicleManager({
     setEditingVehicle(null);
     resetForm();
   };
-
-  const VehicleModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-gray-900 rounded-lg shadow-xl max-w-md w-full border border-gray-700">
-        <div className="flex items-center justify-between p-6 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-gray-100">
-            {isEditModalOpen ? 'Edit Vehicle' : 'Add Vehicle'}
-          </h2>
-          <button
-            onClick={closeModal}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors text-gray-400 hover:text-gray-200"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Vehicle Name
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="My Car"
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Year
-              </label>
-              <input
-                type="number"
-                value={formData.year}
-                onChange={(e) =>
-                  setFormData({ ...formData, year: Number(e.target.value) })
-                }
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-                min="1900"
-                max={new Date().getFullYear() + 1}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Make
-              </label>
-              <input
-                type="text"
-                value={formData.make}
-                onChange={(e) => setFormData({ ...formData, make: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Toyota"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Model
-            </label>
-            <input
-              type="text"
-              value={formData.model}
-              onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Camry"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              VIN
-            </label>
-            <input
-              type="text"
-              value={formData.vin}
-              onChange={(e) => setFormData({ ...formData, vin: e.target.value })}
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-              placeholder="1HGBH41JXMN109186"
-              maxLength={17}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Current Mileage
-            </label>
-            <input
-              type="number"
-              value={formData.currentMileage}
-              onChange={(e) =>
-                setFormData({ ...formData, currentMileage: Number(e.target.value) })
-              }
-              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-              min="0"
-            />
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={closeModal}
-              className="flex-1 px-4 py-2 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              {isEditModalOpen ? 'Save Changes' : 'Add Vehicle'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
 
   return (
     <>
@@ -321,7 +351,15 @@ export default function VehicleManager({
         )}
       </div>
 
-      {(isAddModalOpen || isEditModalOpen) && <VehicleModal />}
+      {(isAddModalOpen || isEditModalOpen) && (
+        <VehicleModal
+          isEditMode={isEditModalOpen}
+          formData={formData}
+          onFormDataChange={setFormData}
+          onSubmit={handleSubmit}
+          onClose={closeModal}
+        />
+      )}
     </>
   );
 }
