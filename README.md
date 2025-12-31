@@ -127,6 +127,30 @@ npm run build
 npm start
 ```
 
+### Deployment to Cloudflare Pages
+
+This app is configured for easy deployment to Cloudflare Pages using static export:
+
+**Option 1: Automatic Deployment via Git**
+1. Connect your repository to Cloudflare Pages
+2. Set build command: `npm run build`
+3. Set output directory: `out`
+4. Deploy!
+
+**Option 2: Manual Deployment with Wrangler**
+```bash
+# Install Wrangler globally (if not already installed)
+npm install -g wrangler
+
+# Login to Cloudflare
+wrangler login
+
+# Deploy
+npm run deploy
+```
+
+The app exports as a static site, making it perfect for Cloudflare Pages, Vercel, Netlify, or any static hosting provider.
+
 ## Data Persistence
 
 All data is stored in the browser's LocalStorage, meaning:
