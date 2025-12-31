@@ -2,6 +2,35 @@
 
 A modern, mobile-first web application for tracking vehicle maintenance across multiple vehicles. Built with Next.js, TypeScript, and Tailwind CSS, optimized for Cloudflare Pages deployment with LocalStorage persistence.
 
+## 🚨 CRITICAL: Fix Authentication Error
+
+**If you're seeing "Authentication error [code: 10000]"**, you have a deploy command configured in Cloudflare Pages that should NOT be there for Git-based deployments.
+
+### ✅ CORRECT Configuration for Git-Based Cloudflare Pages:
+
+Go to **Cloudflare Dashboard** → **Pages** → **Your Project** → **Settings** → **Builds & deployments**
+
+Click **"Edit configuration"** and set:
+
+| Field | Value | Notes |
+|-------|-------|-------|
+| **Framework preset** | Next.js (Static HTML Export) | Select from dropdown |
+| **Build command** | `npm run build` | ✅ Required |
+| **Build output directory** | `out` | ✅ Required |
+| **Root directory** | `/` | Default (leave as-is) |
+| **Deploy command** | **(EMPTY - DELETE THIS)** | ❌ Must be empty! |
+
+### ⚠️ Common Mistake:
+
+The "Deploy command" field exists in the UI, but for Git-based deployments it **MUST BE EMPTY**.
+
+- ❌ **WRONG**: `npm run deploy` or `wrangler pages deploy out`
+- ✅ **CORRECT**: (empty field - no value)
+
+**Why?** Cloudflare Pages automatically deploys your `out/` directory after building. The `npm run deploy` script is ONLY for manual local deployments using Wrangler CLI, NOT for Git-based CI/CD deployments.
+
+---
+
 ## 🚨 IMPORTANT: Cloudflare Pages Configuration
 
 ### For Git-Based Deployments (Recommended)
@@ -246,21 +275,59 @@ Works in all modern browsers supporting:
 
 ## Troubleshooting
 
-### Authentication error during deployment
+### ❌ Authentication error [code: 10000]
 
-**Symptom**: `Authentication error [code: 10000]` when using Git integration.
+**Full Error Message:**
+```
+✘ [ERROR] A request to the Cloudflare API failed.
+Authentication error [code: 10000]
+📎 It looks like you are authenticating Wrangler via a custom API token
+   set in an environment variable.
+```
 
-**Solution**: This happens when you have a deploy command configured. For Git-based Cloudflare Pages:
+**Root Cause**: You have a deploy command configured in Cloudflare Pages settings (like `npm run deploy` or `wrangler pages deploy out`). This is INCORRECT for Git-based deployments.
 
-1. Go to Cloudflare Pages → Your Project → **Settings**
-2. **Builds & deployments** → **Edit configuration**
-3. **Delete the deploy command** (leave field empty)
-4. Keep only:
-   - Build command: `npm run build`
-   - Build output directory: `out`
-5. Save and redeploy
+**Solution - Step by Step:**
 
-Cloudflare Pages will automatically deploy after the build completes.
+1. **Go to Cloudflare Dashboard**
+   - Navigate to https://dash.cloudflare.com/
+   - Click **Workers & Pages** in the left sidebar
+   - Find your project: `vehicle-maintenance-tracker`
+
+2. **Open Settings**
+   - Click on your project name
+   - Click **Settings** tab
+   - Click **Builds & deployments** section
+
+3. **Edit Configuration**
+   - Click **"Edit configuration"** button (top right)
+   - You'll see these fields:
+     - Framework preset
+     - Build command
+     - Build output directory
+     - Root directory (optional)
+     - Deploy command ← **THIS IS THE PROBLEM**
+
+4. **Remove the Deploy Command**
+   - Find the **"Deploy command"** field
+   - **DELETE** any value in this field (should say `npm run deploy` or similar)
+   - Leave it **completely empty**
+   - DO NOT put any value here
+
+5. **Verify These Settings**
+   - ✅ Build command: `npm run build`
+   - ✅ Build output directory: `out`
+   - ❌ Deploy command: (empty)
+
+6. **Save and Retry**
+   - Click **"Save"**
+   - Go to **Deployments** tab
+   - Click **"Retry deployment"** on the failed deployment
+   - OR push a new commit to trigger a fresh deployment
+
+**Expected Result**: Build succeeds and Cloudflare automatically deploys the `out/` directory without any authentication errors.
+
+**Note**: The `npm run deploy` script in `package.json` is ONLY for manual local deployments using Wrangler CLI. It should NEVER be used in Cloudflare Pages Git-based CI/CD.
 
 ### Data not persisting
 
